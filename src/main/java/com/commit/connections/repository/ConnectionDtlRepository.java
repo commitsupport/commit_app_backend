@@ -1,15 +1,13 @@
 package com.commit.connections.repository;
 
 import com.commit.connections.entity.ConnectionDtl;
-import com.commit.connections.entity.ConnectionHdr;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ConnectionHdrRepository extends JpaRepository<ConnectionHdr, Integer> {
+public interface ConnectionDtlRepository extends JpaRepository<ConnectionDtl, Integer> {
 
-    List<ConnectionHdr> findAllByStatus(String status);
-
+    List<ConnectionDtl> findAllByStatusAndConhdrid(String status, Integer conhdrid);
 }
