@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ConnectionDetailsResponse {
 
-        private List<ConnectionDtlDTO> listCompanyDetails;
+    private List<ConnectionDtlDTO> listCompanyDetails;
 
     public ConnectionDetailsResponse(List<ConnectionDtlDTO> listCompanyDetails) {
         this.listCompanyDetails = listCompanyDetails;

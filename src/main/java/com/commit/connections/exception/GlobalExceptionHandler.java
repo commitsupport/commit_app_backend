@@ -37,4 +37,18 @@ public class GlobalExceptionHandler {
                 .status(httpStatus)
                 .body(ApiResponse.error(error));
     }
+
+    @ExceptionHandler(SingleConnectionNotFound.class)
+    public ResponseEntity<ApiResponse<Void>> handleSingleConnectionNotFound(SingleConnectionNotFound ex) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ApiError error = new ApiError(
+                httpStatus.value(),
+                ex.getCode(),
+                ex.getMessage(),
+                ex.getDetails()
+        );
+        return ResponseEntity
+                .status(httpStatus)
+                .body(ApiResponse.error(error));
+    }
 }

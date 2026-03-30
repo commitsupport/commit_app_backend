@@ -10,4 +10,5 @@ import java.util.List;
 public interface ConnectionDtlRepository extends JpaRepository<ConnectionDtl, Integer> {
 
     List<ConnectionDtl> findAllByStatusAndConhdrid(String status, Integer conhdrid);
+    ConnectionDtl findAllByGidAndStatusAndConhdrid(Integer gid, String status, Integer conhdrid);
 }
