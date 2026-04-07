@@ -1,6 +1,7 @@
 package com.commit.connections.service.impl;
 
 import com.commit.connections.dto.common.RequestContext;
+import com.commit.connections.dto.connection_session.dto.ConnectionSessionActive;
 import com.commit.connections.dto.connections.ConnectionDetailsResponse;
 import com.commit.connections.dto.connections.ConnectionSingleDetailsRequest;
 import com.commit.connections.dto.connections.ConnectionSingleDetailsResponse;
@@ -12,21 +13,27 @@ import com.commit.connections.entity.ConnectionHdr;
 import com.commit.connections.exception.SingleConnectionNotFound;
 import com.commit.connections.repository.ConnectionDtlRepository;
 import com.commit.connections.repository.ConnectionHdrRepository;
+import com.commit.connections.repository.ConnectionSessionRepository;
 import com.commit.connections.service.ConnectionsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ConnectionsServicesImpl implements ConnectionsService {
 
     private ConnectionHdrRepository connectionHdrRepository;
     private ConnectionDtlRepository connectionDtlRepository;
+    private ConnectionSessionRepository connectionSessionRepository;
 
-    public ConnectionsServicesImpl(ConnectionHdrRepository connectionHdrRepository, ConnectionDtlRepository connectionDtlRepository) {
+    public ConnectionsServicesImpl(ConnectionHdrRepository connectionHdrRepository, ConnectionDtlRepository connectionDtlRepository, ConnectionSessionRepository connectionSessionRepository) {
         this.connectionHdrRepository = connectionHdrRepository;
         this.connectionDtlRepository = connectionDtlRepository;
+        this.connectionSessionRepository = connectionSessionRepository;
     }
 
     @Override
@@ -49,10 +56,25 @@ public class ConnectionsServicesImpl implements ConnectionsService {
     @Override
     public ConnectionDetailsResponse getConnectionDetailsByConhdrid(Integer conhdrid) {
 
+        // TODO
+        // Wyszukanie aktywnych sesji dla połączeń
+        List<ConnectionSessionActive> activeSessions =
+                connectionSessionRepository.getActiveSessionByConhdridAndStatus(
+                        List.of("A","P"),
+                        conhdrid
+                );
+        Map<Integer, List<String>> activeUsers = activeSessions.stream()
+                .filter(s -> s.getCondtlid() != null && s.getUsername() != null)
+                .collect(Collectors.groupingBy(
+                        ConnectionSessionActive::getCondtlid,
+                        Collectors.mapping(ConnectionSessionActive::getUsername, Collectors.toList())
+                ));
+
+        // wyszukanie aktywnych połączeń
         List<ConnectionDtl> list = connectionDtlRepository.findAllByStatusAndConhdrid("A", conhdrid);
         List<ConnectionDtlDTO> listConnectionsDetails = list.stream()
                 .map((d) -> {
-                    return new ConnectionDtlDTO(
+                     ConnectionDtlDTO condtl = new ConnectionDtlDTO(
                             d.getGid(),
                             d.getConhdrid(),
                             d.getName(),
@@ -62,7 +84,14 @@ public class ConnectionsServicesImpl implements ConnectionsService {
                             d.getPassword(),
                             d.getDescription(),
                             d.getStatus()
-                    );
+                     );
+                     // ustawiamy liste zalogowanych użytkowników
+                     condtl.setListActiveUsers(
+                             new ArrayList<>(
+                                   activeUsers.getOrDefault(d.getGid(), List.of())
+                             )
+                     );
+                    return condtl;
                 }).toList();
         ConnectionDetailsResponse response = new ConnectionDetailsResponse(listConnectionsDetails);
         return response;

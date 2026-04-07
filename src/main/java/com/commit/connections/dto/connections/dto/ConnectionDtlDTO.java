@@ -2,6 +2,9 @@ package com.commit.connections.dto.connections.dto;
 
 import jakarta.persistence.Column;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConnectionDtlDTO {
 
     private Integer gid;
@@ -13,6 +16,7 @@ public class ConnectionDtlDTO {
     private String password;
     private String description;
     private String status;
+    private List<String> listActiveUsers = new ArrayList<>();
 
     public ConnectionDtlDTO(Integer gid, Integer conhdrid, String name, String host, String port, String userlogin, String password, String description, String status) {
         this.gid = gid;
@@ -96,5 +100,29 @@ public class ConnectionDtlDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<String> getListActiveUsers() {
+        return listActiveUsers;
+    }
+
+    public void setListActiveUsers(List<String> listActiveUsers) {
+        this.listActiveUsers = listActiveUsers;
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionDtlDTO{" +
+                "gid=" + gid +
+                ", conhdrid=" + conhdrid +
+                ", name='" + name + '\'' +
+                ", host='" + host + '\'' +
+                ", port='" + port + '\'' +
+                ", userlogin='" + userlogin + '\'' +
+                ", password='" + password + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", listActiveUsers=" + listActiveUsers +
+                '}';
     }
 }

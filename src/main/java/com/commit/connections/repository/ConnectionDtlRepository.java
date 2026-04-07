@@ -11,4 +11,5 @@ public interface ConnectionDtlRepository extends JpaRepository<ConnectionDtl, In
 
     List<ConnectionDtl> findAllByStatusAndConhdrid(String status, Integer conhdrid);
     ConnectionDtl findAllByGidAndStatusAndConhdrid(Integer gid, String status, Integer conhdrid);
+    ConnectionDtl findByGidAndStatus(Integer gid, String status);
 }
